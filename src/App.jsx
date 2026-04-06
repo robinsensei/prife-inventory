@@ -31,6 +31,31 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Dynamic Google Sheets Options State (Fallbacks included)
+  const [products, setProducts] = useState([
+    'Classic', 'Premium', 'Premium Plus', 'Pro', 'Bio', 'Bio-Lite', 'Oxytap', 
+    'Ion Shield', '7 Wonders', 'Prife Bangles(GOLD)', 'Prife Bangles(SILVER)', 
+    'Envy Spec (BLUE)', 'Envy Spec (BLACK)', 'Envy Spec (RED)', 'Envy Spec (PURPLE)', 
+    'Envy Spec (KID)', 'Aurora CLASSIC', 'Aurora PERSONALITY', 'Aurora INTELLECTUAL', 
+    'Aurora TRENDY', 'Aurora UNIQUE', 'Aurora VINTAGE', 'Aurora ELEGANT', 
+    'Aurora CONFIDENT', 'Cartridge', 'MIRACARE OIL (LOCAL PURCHASE)', 
+    'HYDROGEN SPRAYER', 'MAGNOSEEK', 'Eco BAG'
+  ]);
+  
+  const [allTransactions, setAllTransactions] = useState([
+    'Beginning Balance', 'PURCHASE / IN', 'SALES', 'RESUBMISSION', 
+    'REPLACEMENT / WARRANTY', 'PH OFFICE STOCK', 'REPEAT PURCHASE', 
+    'LRW', 'PROMO / FREE', 'Marketing Support Items'
+  ]);
+
+  // Static options
+  const stockists = [
+    'PHILIPPINESHQ', 'BAGUIO', 'BATANGAS', 'BENGUET', 'BOHOL', 'BUKIDNON', 
+    'CALOOCAN', 'CAPIZ', 'CEBU', 'COTABATO', 'DAGUPAN', 'DAVAO', 'FAIRVIEW', 
+    'ILOILO', 'ISABELA01', 'LUCENA02', 'MALOLOS', 'MANDALUYONG', 'PASIG', 
+    'QUEZONCITY', 'SANPEDRO', 'MALAYSIA HO'
+  ];
+
   // Form State
   const [dateInput, setDateInput] = useState('');
   const [stockist, setStockist] = useState('');
@@ -48,12 +73,16 @@ function App() {
         const response = await fetch(SCRIPT_URL);
         const data = await response.json();
 
-        // If data is array (normal case), load it into state
-        if (Array.isArray(data)) {
+        // Process object from custom GAS logic handling Settings
+        if (data && data.transactions) {
+          setRecords(data.transactions);
+          // Kung nilagyan ng laman ang Settings tab, palitan ang fallback ng data from Sheet
+          if (data.products && data.products.length > 0) setProducts(data.products);
+          if (data.transactionTypes && data.transactionTypes.length > 0) setAllTransactions(data.transactionTypes);
+        } else if (Array.isArray(data)) {
           setRecords(data);
         } else if (data && data.status === 'error') {
           console.error("Apps script error: ", data.message);
-          alert("Error loading from database: " + data.message);
         }
       } catch (err) {
         console.error("Failed to fetch Google Sheets data:", err);
@@ -64,28 +93,6 @@ function App() {
 
     fetchData();
   }, []);
-
-  // Static options
-  const stockists = [
-    'PHILIPPINESHQ', 'BAGUIO', 'BATANGAS', 'BENGUET', 'BOHOL', 'BUKIDNON',
-    'CALOOCAN', 'CAPIZ', 'CEBU', 'COTABATO', 'DAGUPAN', 'DAVAO', 'FAIRVIEW',
-    'ILOILO', 'ISABELA01', 'LUCENA02', 'MALOLOS', 'MANDALUYONG', 'PASIG',
-    'QUEZONCITY', 'SANPEDRO', 'MALAYSIA HO'
-  ];
-  const allTransactions = [
-    'Beginning Balance', 'PURCHASE / IN', 'SALES', 'RESUBMISSION',
-    'REPLACEMENT / WARRANTY', 'PH OFFICE STOCK', 'REPEAT PURCHASE',
-    'LRW', 'PROMO / FREE', 'Marketing Support Items'
-  ];
-  const products = [
-    'Classic', 'Premium', 'Premium Plus', 'Pro', 'Bio', 'Bio-Lite', 'Oxytap',
-    'Ion Shield', '7 Wonders', 'Prife Bangles(GOLD)', 'Prife Bangles(SILVER)',
-    'Envy Spec (BLUE)', 'Envy Spec (BLACK)', 'Envy Spec (RED)', 'Envy Spec (PURPLE)',
-    'Envy Spec (KID)', 'Aurora CLASSIC', 'Aurora PERSONALITY', 'Aurora INTELLECTUAL',
-    'Aurora TRENDY', 'Aurora UNIQUE', 'Aurora VINTAGE', 'Aurora ELEGANT',
-    'Aurora CONFIDENT', 'Cartridge', 'MIRACARE OIL (LOCAL PURCHASE)',
-    'HYDROGEN SPRAYER', 'MAGNOSEEK', 'Eco BAG'
-  ];
 
   // Parse Date UI State
   const parsedDate = getParsedDateInfo(dateInput);
