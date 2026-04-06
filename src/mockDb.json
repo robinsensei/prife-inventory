@@ -1,0 +1,6 @@
+{
+  "transactions": [
+    { "id": 1, "date": "May 1, 2024", "stockist": "Previous monthly balance", "transactionType": "Beginning Balance", "product": "Classic", "type": "IN", "quantity": 1000 },
+    { "id": 2, "date": "May 11, 2024", "stockist": "PHILIPPINESHQ", "transactionType": "PH OFFICE STOCK", "product": "Classic", "type": "IN", "quantity": 50 }
+  ]
+}
