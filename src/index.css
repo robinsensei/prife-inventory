@@ -74,7 +74,7 @@ body {
   grid-template-columns: 400px 1fr;
   gap: 20px;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1500px;
   height: calc(100vh - 40px);
 }
 
